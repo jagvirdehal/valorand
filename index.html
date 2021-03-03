@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 4% 10%;
+            /* height: 90vh; */
+        }
+
+        img {
+            border: black solid 5px;
+            padding: 10px 5px 0px 5px;
+            margin-bottom: 5px;
+            height: 100px;
+        }
+
+        .left img {
+            background-color: mediumaquamarine;
+        }
+
+        .right img {
+            background-color: salmon;
+        }
+
+        .agents {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .container {
+            display: flex;
+            height: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shuffle {
+            font-size: 28px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: whitesmoke;
+            border: navy solid 2px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 300ms;
+        }
+
+        .shuffle:hover {
+            font-size: 36px;
+            border-width: 3px;
+        }
+
+        .spin {
+            transition: transform 300ms;
+        }
+
+        .spin:hover {
+            transform: rotate(360deg);
+            padding: 30px;
+        }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+
+    <title>Document</title>
+</head>
+<body>
+    <div id="app" class="container">
+        <div class="agents left" @click="left = left.slice()">
+            <template v-for="(agentNum, index) in left">
+                <img :src="`img/${agentNum}.png`" :title="agents[agentNum]" @click="left = replaceMember(left, index);" :key="index">
+            </template>
+        </div>
+    
+        <div class="spin">
+            <button class="shuffle" @click="left = generateTeam(); right = generateTeam();">Shuffle</button>
+        </div>
+
+        <div class="agents right">
+            <template v-for="agentNum in right">
+                <img :src="`img/${agentNum}.png`">
+            </template>
+        </div>
+    </div>
+
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                agents: {
+                    1: "Brimstone",
+                    2: "Phoenix",
+                    3: "Sage",
+                    4: "Sova",
+                    5: "Viper",
+                    6: "Cypher",
+                    7: "Reyna",
+                    8: "Killjoy",
+                    9: "Breach",
+                    10: "Omen",
+                    11: "Jett",
+                    12: "Raze",
+                    13: "Skye",
+                    14: "Yoru",
+                    15: "Astra",
+                },
+
+                left: [1,2,3,4,5],
+                right: [6,7,8,9,10],
+            },
+            methods: {
+                generateTeam: function() {
+                    let emptyArray = [];
+                    return this.fillTeam(emptyArray);
+                },
+                fillTeam: function(team) {
+                    let agents = Object.keys(this.agents).filter((value) => {
+                        return !(parseInt(value) in team);
+                    });
+                    let selected = team;
+                    let emptySlots = [];
+
+                    console.log(agents);
+
+                    for (let i = 0; i < 5; i++) {
+                        if (!(i in team)) emptySlots.push(i);
+                    }
+
+                    for (let i = 0; i < emptySlots.length; i++) {
+                        const index = emptySlots[i];
+                        let randInt, choice;
+
+                        do {
+                            randInt = Math.floor(Math.random() * agents.length);
+                            choice = parseInt(agents[randInt]);
+                        } while (selected.includes(choice));
+
+                        agents.splice(randInt, 1);
+                        selected[index] = choice;
+                    }
+                    return selected;
+                },
+                replaceMember: function(team, index) {
+                    let newTeam = team;
+                    delete newTeam[index];
+                    return this.fillTeam(newTeam);
+                }
+            }
+        })
+    </script>
+</body>
+</html>
